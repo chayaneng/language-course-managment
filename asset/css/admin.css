@@ -1,0 +1,42 @@
+.lang_course table {
+	position: relative;
+	padding: 0 0 30px 0;
+	width: 100%;
+    text-align: left;
+}
+
+.lang_course tr:nth-child(odd) {
+	background: #e6e2e2;
+}
+
+.lang_course tr.last-chid-add {
+	background: transparent;
+    position: absolute;
+    bottom: -16px;
+    left: -5px;
+}
+
+.lang_course td,
+.lang_course th {
+	padding: 5px;
+}
+
+a[href*=cancel] {
+    display: none;
+}
+
+.edit_delete a {
+    text-decoration: none;
+}
+
+.lang_course span.errors {
+    font-size: 12px;
+    font-style: italic;
+    color: #e03333;
+}
+
+.lang_course p label {
+    font-size: 16px;
+    font-weight: 500;
+    -webkit-font-smoothing: antialiased;
+}
