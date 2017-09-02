@@ -23,6 +23,7 @@ function nc_create_location_table() {
     $sql = "CREATE TABLE " . $table_name . " (
             id MEDIUMINT(9) NOT NULL AUTO_INCREMENT,
             PRIMARY KEY (id),
+            lang_list VARCHAR (100),
             language VARCHAR (100),
             coursetype VARCHAR (55),
             startingdate VARCHAR (55),
@@ -45,8 +46,13 @@ class langCourse {
         add_action( 'wp_ajax_add_course', array( $this, 'add_course_ajax' ) );
         add_action( 'wp_ajax_nopriv_add_course', array( $this, 'add_course_ajax' ) );
         add_action( 'admin_enqueue_scripts', array( $this, 'js_css_files') );
+        add_action( 'wp_enqueue_scripts', array( $this, 'front_js_css_files') );
         add_action( 'admin_notices', array( $this, 'custom_notice_on_action' ) );
         $this->admin_page_course();
+    }
+
+    public function front_js_css_files() {
+        wp_enqueue_style( 'front-table', PLUGINS_URL_ASSEST.'css/front-table.css' );
     }
 
     public function js_css_files() {
@@ -64,24 +70,27 @@ class langCourse {
         $table_name = $wpdb->prefix . "langcourse";
 
         if( $_POST ) {
-            $languageName = isset( $_POST['languageName'] ) ? $_POST['languageName'] : '';
-            $courseType = isset( $_POST['courseType'] ) ? $_POST['courseType'] : '';
-            $startingDate = isset( $_POST['startingDate'] ) ? $_POST['startingDate'] : '';
-            $startingTime = isset( $_POST['startingTime'] ) ? $_POST['startingTime'] : '';
-            $price = isset( $_POST['price'] ) ? $_POST['price'] : '';
-            $endingTime = isset( $_POST['endingTime'] ) ? $_POST['endingTime'] : '';
+            $langlist       = isset( $_POST['lang-list'] ) ? $_POST['lang-list'] : '';
+            $languageName   = isset( $_POST['languageName'] ) ? $_POST['languageName'] : '';
+            $courseType     = isset( $_POST['courseType'] ) ? $_POST['courseType'] : '';
+            $startingDate   = isset( $_POST['startingDate'] ) ? $_POST['startingDate'] : '';
+            $startingTime   = isset( $_POST['startingTime'] ) ? $_POST['startingTime'] : '';
+            $price          = isset( $_POST['price'] ) ? $_POST['price'] : '';
+            $endingTime     = isset( $_POST['endingTime'] ) ? $_POST['endingTime'] : '';
 
             $wpdb->insert(
                 $table_name,
                 array(
-                    'language' => $languageName,
-                    'coursetype' => $courseType,
-                    'startingdate' => $startingDate,
-                    'coursetime' => $startingTime,
-                    'price' => $price,
-                    'endingtime' => $endingTime
+                    'lang_list'     => $langlist,
+                    'language'      => $languageName,
+                    'coursetype'    => $courseType,
+                    'startingdate'  => $startingDate,
+                    'coursetime'    => $startingTime,
+                    'price'         => $price,
+                    'endingtime'    => $endingTime
                 ),
                 array(
+                    '%s',
                     '%s',
                     '%s',
                     '%s',
@@ -132,6 +141,10 @@ class langCourse {
     public function admin_page_course() {
         require_once( PLUGINS_PATH .'/admin-page.php' );
         require_once( PLUGINS_PATH .'/template-tags.php' );
+        require_once( PLUGINS_PATH .'/vendor/autoload.php' );
+        require_once( PLUGINS_PATH .'/mail.php' );
+        require_once( PLUGINS_PATH .'/admin-mail.php' );
+        require_once( PLUGINS_PATH .'/shortcode.php' );
     }
 }
 

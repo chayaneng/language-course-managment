@@ -3,19 +3,51 @@
 	$(document).ready( function() {
 		// After delete row set url to default
 		var href = window.location.href;
-		if( href.indexOf('page=lang-course&delete') !== -1 ) {
+		if( href.indexOf('lang-list=select-lang') !== -1 ) {
 			window.history.pushState({}, 'Course Managment', 'admin.php?page=lang-course');
 		}
 
+		if( href.indexOf( '&delete' ) !== -1 ) {
+			lastPart = href.split('&').pop();
+			replacedHref = href.replace( '&'+lastPart, '' );
+			window.history.pushState({}, 'Course Managment', replacedHref );
+		}
+
+		var allCourse = $('.all_courses').get(1);
+		if( typeof allCourse !== undefined )
+		$('.lang-course p.submit').append( $(allCourse) );
+
+		$('.starting_date').datetimepicker({
+			lang:'en',
+			timepicker:false,
+			format:'Y/m/d',
+			formatDate:'Y/m/d',
+			minDate:'-1970/01/02', // yesterday is minimum date
+			maxDate:'+2050/01/02' // and tommorow is maximum date calendar
+		});
+
+		$('.starting_time').datetimepicker({
+			datepicker:false,
+			format:'g:i a',
+			step : 5
+		});
+
+		$('.courseendingtime').datetimepicker({
+			datepicker:false,
+			format:'g:i a',
+			step : 5
+		});
+
 		$('.add_course').on('click', function() {
-			var errors = {};
-			var languageName, courseType, startingDate, startingTime, coursePrice, endingTime;
-			languageName = $('.language_name').val();
-			courseType = $('.course_type').val();
-			startingDate = $('.starting_date').val();
-			startingTime = $('.starting_time').val();
-			coursePrice = $('.courseprice').val();
-			endingTime = $('.courseendingtime').val();
+			var languageName, courseType, startingDate, startingTime, coursePrice, endingTime, windowLocation;
+			windowLocation 	= window.location.href;
+			langList 		= href.split('=').pop();
+			languageName 	= $('.language_name').val();
+			courseType 		= $('.course_type').val();
+			startingDate 	= $('.starting_date').val();
+			startingTime 	= $('.starting_time').val();
+			coursePrice 	= $('.courseprice').val();
+			endingTime 		= $('.courseendingtime').val();
 
 			$.ajax({
 				url : course.ajax_url,
@@ -27,10 +59,11 @@
 					'startingDate'	: startingDate,
 					'startingTime'	: startingTime,
 					'price'			: coursePrice,
-					'endingTime'	: endingTime
+					'endingTime'	: endingTime,
+					'lang-list'		: langList
 				},
 				success : function( data ) {
-					$('.lang_course tbody').append( $(data) );
+					$('.lang-course tbody').append( $(data) );
 					$('.language_name').val(' ');
 					$('.course_type').val(' ');
 					$('.starting_date').val(' ');
@@ -39,17 +72,18 @@
 					$('.courseendingtime').val(' ');
 				}
 			});
-
-			
 			return false;
 		});
 
 		function edit_form_html( $this, value, id, refClass, refValue, edit_or_calcel ) {
 			switch (refClass) {
 				case 'language':
+					var windowLocation 	= window.location.href;
+					var langList 		= href.split('=').pop();
 					if( edit_or_calcel == 'edit' ) {
 						$html = '<input type="text" name="language-'+ id +'" class="language-'+ id +'" value="'+ refValue +'">';
 						$html += '<input type="hidden" name="id-'+id+'" value="'+ id +'"/>';
+						$html += '<input type="hidden" name="lang-list" value="'+ langList +'"/>';
 					} else {
 						$html = refValue;
 					}
@@ -149,7 +183,7 @@
 		}
 
 		// Edit for showing
-		$('.lang_course table').on('click', "a[href*=edit]", function(e) {
+		$('.lang-course table').on('click', "a[href*=edit]:not(.not-here)", function(e) {
 			e.preventDefault();
 
 		    var $this 	= $(this),
@@ -164,7 +198,7 @@
 		});
 
 		// cancel for showing
-		$('.lang_course table').on('click', "a[href*=cancel]", function(e) {
+		$('.lang-course table').on('click', "a[href*=cancel]", function(e) {
 			e.preventDefault();
 		    var $this 	= $(this),
 		    	id 		= $this.attr('id').split('-').pop(),

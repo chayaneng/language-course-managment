@@ -9,7 +9,6 @@ class course_Tags {
 
 	public function __construct() {
 		self::$instance = $this;
-
 	}
 
 	public static function instance() {
@@ -24,48 +23,61 @@ class course_Tags {
 		$wpdb->show_errors();
 		$table_name = $this->get_table_name();
 
-		if( isset( $_POST['submit'] ) ) {
-			$data_chunk = array_chunk( $_POST , 7 );
-			$i = 1;
-			foreach ( $data_chunk as $key => $value) {
-				$data_chunk_count = count( $data_chunk ) - 1;
-				if( $i <= $data_chunk_count ) {
-					$result = $wpdb->update(
-						$table_name,
-						array(
-							'language' => $value[0],
-							'coursetype' => $value[2],
-							'startingdate' => $value[3],
-							'coursetime' => $value[4],
-							'price' => $value[5],
-							'endingtime' => $value[6]
-						),
-						array(
-							'id'	=> $value[1]
-						),
-						array(
-							'%s',
-							'%s',
-							'%s',
-							'%s',
-							'%s'
-						),
-						array(
-							'%d'
-						)
-					);
+		if( isset( $_POST['update_change'] ) ) {
+			$post_data = $_POST;
+			$data_count = count( $post_data );
+
+			if( $data_count > 8 ) :
+
+				$data_chunks =  array_splice( $post_data, 1 );
+				$data_chunks = array_chunk( $data_chunks , 7 );
+				$i = 1;
+				$chunk_count = count($data_chunks) - 1;
+				
+				foreach ( $data_chunks as $key => $value) {
+					if( $i <= $chunk_count ) {
+						$result = $wpdb->update(
+							$table_name,
+							array(
+								'lang_list'		=> $post_data['lang-list'],
+								'language' 		=> $value[0],
+								'coursetype' 	=> $value[2],
+								'startingdate' 	=> $value[3],
+								'coursetime' 	=> $value[4],
+								'price' 		=> $value[5],
+								'endingtime' 	=> $value[6]
+							),
+							array(
+								'id'			=> $value[1]
+							),
+							array(
+								'%s',
+								'%s',
+								'%s',
+								'%s',
+								'%s',
+								'%s',
+								'%s'
+							),
+							array(
+								'%d'
+							)
+						);
+					}
+					$i++;
 				}
-				$i++;
-			}
-			return $result;
+				return $data_chunks;
+			endif;
 		} 
 	}
+
+
 
 	public function sorted_courses( $column ) {
 		global $wpdb;
 		$table_name = $this->get_table_name();
-		$sql = "SELECT * FROM {$table_name} WHERE language IN( %s ) AND coursetype IN( %s )";
-		$results = $wpdb->get_results( $wpdb->prepare( $sql, $column['language-list'], $column['coursetype-list'] ), OBJECT );
+		$sql = "SELECT * FROM {$table_name} WHERE lang_list LIKE %s ORDER BY id DESC";
+		$results = $wpdb->get_results( $wpdb->prepare( $sql, '%' . $column['lang-list'].'%' ), OBJECT );
 		if( $results ) {
 			return $results;
 		}
@@ -165,3 +177,5 @@ class course_Tags {
 	}
 
 }
+global $tag_instance;
+$tag_instance = course_Tags::instance();

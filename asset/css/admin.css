@@ -1,27 +1,27 @@
-.lang_course table {
+.lang-course table  {
 	position: relative;
 	padding: 0 0 30px 0;
 	width: 100%;
     text-align: left;
 }
 
-.lang_course tr:nth-child(odd) {
+.lang-course table tr:nth-child(odd) {
 	background: #e6e2e2;
 }
 
-.lang_course tr.last-chid-add {
+.lang-course table tr.last-chid-add {
 	background: transparent;
     position: absolute;
     bottom: -16px;
     left: -5px;
 }
 
-.lang_course td,
-.lang_course th {
+.lang-course table td,
+.lang-course table th {
 	padding: 5px;
 }
 
-a[href*=cancel] {
+.lang-course table a[href*=cancel] {
     display: none;
 }
 
@@ -29,14 +29,31 @@ a[href*=cancel] {
     text-decoration: none;
 }
 
-.lang_course span.errors {
+.lang-course table span.errors {
     font-size: 12px;
     font-style: italic;
     color: #e03333;
 }
 
-.lang_course p label {
+.lang-course table p label {
     font-size: 16px;
     font-weight: 500;
     -webkit-font-smoothing: antialiased;
 }
+
+a.all_courses {
+    display: inline-block;
+    padding: 4px 10px;
+    text-decoration: none;
+    background: #efeaea;
+    vertical-align: middle;
+    box-shadow: 0px 1px 3px 0px black;
+    margin-left: 10px;
+    border-radius: 6px;
+}
+
+input.button.button-primary.lang-save, a.lang-save{
+    margin-top: 25px;
+}
+
+
